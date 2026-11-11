@@ -763,10 +763,8 @@ html, body {
     touch-action: none;
 }
 
-body.touch-controls-on #virtual-joystick,
-body.touch-controls-on #action-buttons {
-    display: block;
-}
+body.touch-controls-on #virtual-joystick { display: block; }
+body.touch-controls-on #action-buttons { display: flex; }
 
 /* Desktop mouse/keyboard: keep the controls hidden even when shown. */
 @media (hover: hover) and (pointer: fine) {
@@ -790,6 +788,9 @@ body.touch-controls-on #action-buttons {
 }
 
 #joystick-knob {
+    position: absolute;
+    left: 50%;
+    top: 50%;
     width: 48px;
     height: 48px;
     background: linear-gradient(135deg, rgba(23, 224, 255, 0.82), rgba(109, 185, 255, 0.7));
