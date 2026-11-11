@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Kart Racer</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23060918'/%3E%3Cpath d='M6 22 L16 8 L26 22' stroke='%2317e0ff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='23' r='3' fill='%23ff2ea6'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#060918">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Neon Kart Racer">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23060918'/%3E%3Cpath d='M6 22 L16 8 L26 22' stroke='%2317e0ff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='23' r='3' fill='%23ff2ea6'/%3E/svg%3E">
+    <script src="./app.js" defer></script>
+  <!-- STATIC_SITE_LOADER_END -->
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- ══ HUD (visible while racing) ══ -->
+    <div id="hud" class="hidden">
+        <div id="hud-top-left" class="hud-panel">
+            <div class="hud-row">
+                <span class="hud-label">LAP</span>
+                <span class="hud-big"><span id="lapNow">1</span><span class="hud-dim">/<span id="lapTotal">3</span></span></span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-label">TIME</span>
+                <span class="hud-big" id="lapTime">0:00.00</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-label">BEST</span>
+                <span class="hud-mid hud-cyan" id="bestLap">--:--.--</span>
+            </div>
+            <div id="cleanRunBadge" class="hidden">CLEAN RUN</div>
+        </div>
+
+        <div id="hud-top-right">
+            <canvas id="minimap" width="190" height="190"></canvas>
+            <div id="positionBadge"><span id="positionValue">4</span><span id="positionSuffix">th</span></div>
+        </div>
+
+        <div id="hud-bottom-right" class="hud-panel">
+            <span class="hud-big hud-speed" id="speedValue">0</span>
+            <span class="hud-unit">km/h</span>
+        </div>
+
+        <div id="hud-bottom-left">
+            <div id="driftBar"><div id="driftFill"></div></div>
+            <div id="boostLabel" class="hidden">BOOST!</div>
+        </div>
+    </div>
+
+    <!-- ══ Countdown ══ -->
+    <div id="countdownDisplay" class="hidden">3</div>
+
+    <!-- ══ Wrong-way warning ══ -->
+    <div id="wrongWay" class="hidden">⟲ WRONG WAY</div>
+
+    <!-- ══ Toast notifications ══ -->
+    <div id="toast" class="hidden"></div>
+
+    <!-- ══ Start screen / main menu ══ -->
+    <div id="startScreen">
+        <div class="menu-bg"></div>
+        <div class="menu-inner">
+            <h1 class="game-title">NEON&nbsp;KART<br><span>RACER</span></h1>
+            <p class="subtitle">Drift. Boost. Own the track.</p>
+
+            <div id="trackGrid" class="track-grid"><!-- track cards injected by Menu.js --></div>
+
+            <div class="menu-cols">
+                <div class="menu-block">
+                    <div class="block-label">TIME OF DAY</div>
+                    <div id="todChips" class="chip-row"><!-- chips injected --></div>
+                </div>
+                <div class="menu-block">
+                    <div class="block-label">DIFFICULTY</div>
+                    <div id="diffChips" class="chip-row diff-row"><!-- chips injected --></div>
+                    <div id="diffHint" class="diff-hint"></div>
+                </div>
+                <div class="menu-block">
+                    <div class="block-label">KART LIVERY</div>
+                    <div class="swatch-group">
+                        <span class="swatch-label">Body</span>
+                        <div id="bodySwatches" class="swatch-row"></div>
+                    </div>
+                    <div class="swatch-group">
+                        <span class="swatch-label">Accent</span>
+                        <div id="accentSwatches" class="swatch-row"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-card">
+                <div class="control-row"><span class="key">W / ↑</span><span>Accelerate</span></div>
+                <div class="control-row"><span class="key">S / ↓</span><span>Brake / Reverse</span></div>
+                <div class="control-row"><span class="key">A · D / ← · →</span><span>Steer — corners are yours!</span></div>
+                <div class="control-row"><span class="key">SHIFT</span><span>Drift — hold in a turn for a mini-turbo</span></div>
+                <div class="control-row"><span class="key">📱 TAP / DRAG</span><span>Touch = left stick steer + GAS/BRAKE/DRIFT buttons</span></div>
+                <div class="control-row"><span class="key">M</span><span>Mute</span></div>
+            </div>
+
+            <button id="startButton" class="start-btn">▶ START RACE</button>
+            <p class="menu-foot" id="menuFoot"></p>
+        </div>
+    </div>
+
+    <!-- ══ Finish screen ══ -->
+    <div id="finishOverlay" class="hidden">
+        <div class="finish-card">
+            <h2 class="finish-title" id="finishTitle">🏁 FINISH!</h2>
+            <div class="finish-times">
+                <div class="finish-time">
+                    <span class="hud-label">TOTAL TIME</span>
+                    <span class="time-value" id="totalTime">0:00.00</span>
+                </div>
+                <div class="finish-time">
+                    <span class="hud-label">BEST LAP</span>
+                    <span class="time-value time-cyan" id="finishBest">0:00.00</span>
+                </div>
+            </div>
+            <h3 class="standings-title">FINAL STANDINGS</h3>
+            <div id="standingsList"></div>
+            <div class="finish-buttons">
+                <button id="restartButton" class="start-btn">↻ RACE AGAIN</button>
+                <button id="menuButton" class="start-btn secondary">☰ CHANGE TRACK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ On-screen error reporter ══ -->
+    <script>
+        window.addEventListener('error', function (ev) {
+            const err = ev.error || ev.message || ev;
+            console.error('[global error]', err);
+            const banner = document.getElementById('errorBanner');
+            if (banner) {
+                banner.style.display = 'block';
+                banner.textContent = 'Uncaught error:\n\n' + (err && err.stack ? err.stack : String(err));
+            }
+        });
+        window.addEventListener('unhandledrejection', function (ev) {
+            console.error('[unhandled rejection]', ev.reason);
+            const banner = document.getElementById('errorBanner');
+            if (banner) {
+                banner.style.display = 'block';
+                banner.textContent = 'Unhandled promise rejection:\n\n' + (ev.reason && ev.reason.stack ? ev.reason.stack : String(ev.reason));
+            }
+        });
+    </script>
+    <div id="errorBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99999;
+         padding:16px 20px;background:#3a0d0d;color:#ffcccc;font-family:monospace;font-size:13px;
+         white-space:pre-wrap;word-break:break-word;border-bottom:2px solid #ff5555;
+         max-height:80vh;overflow:auto"></div>
+
+</body>
+</html>

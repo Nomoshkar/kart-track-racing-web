@@ -1,0 +1,28 @@
+{
+  "name": "Neon Kart Racer",
+  "short_name": "Neon Kart",
+  "description": "Drift. Boost. Own the track. A Mario-Kart-style arcade racer built with Babylon.js.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#060918",
+  "theme_color": "#060918",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["games", "racing"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23060918'/%3E%3Cpath d='M6 22 L16 8 L26 22' stroke='%2317e0ff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='23' r='3' fill='%23ff2ea6'/%3E/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 288'%3E%3Crect width='512' height='288' fill='%23060918'/%3E%3Crect x='40' y='80' width='80' height='120' fill='%2317e0ff'/%3E%3Crect x='160' y='60' width='80' height='140' fill='%23ff2ea6'/%3E%3Crect x='280' y='80' width='80' height='120' fill='%2317e0ff'/%3E%3Ctext x='256' y='200' font-family='Arial' font-size='24' fill='%2317e0ff' text-anchor='middle'%3ENeon Kart Racer%3C/text%3E%3C/svg%3E",
+      "sizes": "512x288",
+      "type": "image/svg+xml"
+    }
+  ]
+}
