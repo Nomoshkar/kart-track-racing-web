@@ -17,10 +17,22 @@
   <!-- STATIC_SITE_LOADER_END -->
 </head>
 <body>
+    <!-- ══ Boot splash (fades out after the first frame) ══ -->
+    <div id="bootSplash">
+        <div class="boot-scan"></div>
+        <div class="boot-logo"><span>NEON</span> KART<small>RACER</small></div>
+        <div class="boot-loader"><span></span></div>
+        <p class="boot-text">WARMING UP THE GRID…</p>
+    </div>
+
     <canvas id="gameCanvas"></canvas>
 
     <!-- ══ HUD (visible while racing) ══ -->
     <div id="hud" class="hidden">
+        <!-- speed / boost screen treatment -->
+        <div id="speedFx" aria-hidden="true"></div>
+        <div id="boostFlash" aria-hidden="true"></div>
+
         <div id="hud-top-left" class="hud-panel">
             <div class="hud-row">
                 <span class="hud-label">LAP</span>
@@ -34,21 +46,44 @@
                 <span class="hud-label">BEST</span>
                 <span class="hud-mid hud-cyan" id="bestLap">--:--.--</span>
             </div>
+            <div id="trackProgress" aria-hidden="true">
+                <div id="trackProgressFill"></div>
+                <span class="progress-tick t25"></span>
+                <span class="progress-tick t50"></span>
+                <span class="progress-tick t75"></span>
+                <span id="trackProgressDot"></span>
+            </div>
             <div id="cleanRunBadge" class="hidden">CLEAN RUN</div>
         </div>
 
         <div id="hud-top-right">
             <canvas id="minimap" width="190" height="190"></canvas>
-            <div id="positionBadge"><span id="positionValue">4</span><span id="positionSuffix">th</span></div>
+            <div id="positionBadge" class="medal-p4">
+                <span class="position-prefix">POS</span>
+                <span id="positionValue">4</span><span id="positionSuffix">th</span>
+            </div>
         </div>
 
-        <div id="hud-bottom-right" class="hud-panel">
-            <span class="hud-big hud-speed" id="speedValue">0</span>
-            <span class="hud-unit">km/h</span>
+        <div id="hud-bottom-right" class="hud-panel speedo">
+            <svg class="speedo-dial" viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="dial-track" cx="50" cy="50" r="42" pathLength="100"></circle>
+                <circle id="speedoArc" class="dial-value" cx="50" cy="50" r="42" pathLength="100"></circle>
+            </svg>
+            <div class="speedo-core">
+                <span class="hud-big hud-speed" id="speedValue">0</span>
+                <span class="hud-unit">km/h</span>
+            </div>
         </div>
 
         <div id="hud-bottom-left">
-            <div id="driftBar"><div id="driftFill"></div></div>
+            <div class="drift-head">
+                <span>DRIFT CHARGE</span>
+                <span id="driftPct">0%</span>
+            </div>
+            <div id="driftBar">
+                <div id="driftFill"></div>
+                <div class="drift-segments" aria-hidden="true"></div>
+            </div>
             <div id="boostLabel" class="hidden">BOOST!</div>
         </div>
     </div>
@@ -64,12 +99,32 @@
 
     <!-- ══ Start screen / main menu ══ -->
     <div id="startScreen">
-        <div class="menu-bg"></div>
+        <div class="menu-bg">
+            <span class="menu-orb orb-a"></span>
+            <span class="menu-orb orb-b"></span>
+            <span class="menu-orb orb-c"></span>
+            <span class="menu-sweep"></span>
+            <span class="menu-scan"></span>
+        </div>
         <div class="menu-inner">
-            <h1 class="game-title">NEON&nbsp;KART<br><span>RACER</span></h1>
-            <p class="subtitle">Drift. Boost. Own the track.</p>
+            <div class="menu-topline">
+                <span class="live-dot"></span> ARCADE GP
+                <span class="topline-sep">/</span> 8 KARTS
+                <span class="topline-sep">/</span> 12 CIRCUITS
+            </div>
 
+            <h1 class="game-title">NEON&nbsp;KART<br><span>RACER</span></h1>
+            <div class="subtitle-row">
+                <p class="subtitle">Drift. Boost. Own the track.</p>
+                <span class="season-tag">S01</span>
+            </div>
+
+            <div class="section-head">
+                <span>SELECT CIRCUIT</span>
+                <span id="trackCount" class="section-count">12 TRACKS</span>
+            </div>
             <div id="trackGrid" class="track-grid"><!-- track cards injected by Menu.js --></div>
+            <div id="trackSummary" class="track-summary" aria-live="polite"><!-- filled by Menu.js --></div>
 
             <div class="menu-cols">
                 <div class="menu-block">
@@ -81,8 +136,27 @@
                     <div id="diffChips" class="chip-row diff-row"><!-- chips injected --></div>
                     <div id="diffHint" class="diff-hint"></div>
                 </div>
-                <div class="menu-block">
+                <div class="menu-block livery-block">
                     <div class="block-label">KART LIVERY</div>
+                    <div id="liveryPreview" class="livery-preview">
+                        <div class="livery-kart" aria-hidden="true">
+                            <span class="lk-wing lk-front"></span>
+                            <span class="lk-wheel lk-w1"></span>
+                            <span class="lk-wheel lk-w2"></span>
+                            <span class="lk-body"></span>
+                            <span class="lk-pod lk-left"></span>
+                            <span class="lk-pod lk-right"></span>
+                            <span class="lk-cockpit"></span>
+                            <span class="lk-helmet"></span>
+                            <span class="lk-wing lk-rear"></span>
+                            <span class="lk-wheel lk-w3"></span>
+                            <span class="lk-wheel lk-w4"></span>
+                        </div>
+                        <div class="livery-meta">
+                            <span id="liveryBodyName">Neon Blue</span>
+                            <span id="liveryAccentName">Neon Cyan accent</span>
+                        </div>
+                    </div>
                     <div class="swatch-group">
                         <span class="swatch-label">Body</span>
                         <div id="bodySwatches" class="swatch-row"></div>
@@ -103,14 +177,30 @@
                 <div class="control-row"><span class="key">M</span><span>Mute</span></div>
             </div>
 
-            <button id="startButton" class="start-btn">▶ START RACE</button>
+            <div class="menu-start-dock">
+                <div class="start-meta" id="startMeta">3 LAPS · 7 RIVALS · DAY</div>
+                <button id="startButton" class="start-btn">▶ START RACE</button>
+                <div class="start-hint">PRESS ENTER OR TAP TO LAUNCH</div>
+            </div>
             <p class="menu-foot" id="menuFoot"></p>
         </div>
     </div>
 
     <!-- ══ Finish screen ══ -->
     <div id="finishOverlay" class="hidden">
-        <div class="finish-card">
+        <div id="confettiLayer" aria-hidden="true"></div>
+        <div class="finish-card" role="dialog" aria-modal="true" aria-labelledby="finishTitle">
+            <button id="closeFinishButton" class="finish-close" type="button" aria-label="Back to menu">✕</button>
+
+            <div class="finish-hero">
+                <div id="finishMedal" class="finish-medal">🏁</div>
+                <div class="finish-hero-copy">
+                    <span class="finish-eyebrow">RACE COMPLETE</span>
+                    <div id="finishPlacement" class="finish-placement">8th PLACE</div>
+                    <div id="finishSubline" class="finish-subline">3 laps · 7 rivals</div>
+                </div>
+            </div>
+
             <h2 class="finish-title" id="finishTitle">🏁 FINISH!</h2>
             <div class="finish-times">
                 <div class="finish-time">
@@ -122,12 +212,16 @@
                     <span class="time-value time-cyan" id="finishBest">0:00.00</span>
                 </div>
             </div>
-            <h3 class="standings-title">FINAL STANDINGS</h3>
+            <div class="standings-head">
+                <h3 class="standings-title">FINAL STANDINGS</h3>
+                <span class="standings-caption">8 KARTS · SORTED BY TIME</span>
+            </div>
             <div id="standingsList"></div>
             <div class="finish-buttons">
                 <button id="restartButton" class="start-btn">↻ RACE AGAIN</button>
                 <button id="menuButton" class="start-btn secondary">☰ CHANGE TRACK</button>
             </div>
+            <p class="finish-hint">SCROLL FOR FULL RESULTS · ESC TO EXIT</p>
         </div>
     </div>
 
