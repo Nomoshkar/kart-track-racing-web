@@ -174,13 +174,31 @@
                 <div class="control-row"><span class="key">A · D / ← · →</span><span>Steer — corners are yours!</span></div>
                 <div class="control-row"><span class="key">SHIFT</span><span>Drift — hold in a turn for a mini-turbo</span></div>
                 <div class="control-row"><span class="key">📱 TAP / DRAG</span><span>Touch = left stick steer + GAS/BRAKE/DRIFT buttons</span></div>
-                <div class="control-row"><span class="key">M</span><span>Mute</span></div>
+                <div class="control-row"><span class="key">M · F</span><span>Mute · Fullscreen — Esc exits</span></div>
             </div>
 
             <div class="menu-start-dock">
                 <div class="start-meta" id="startMeta">3 LAPS · 7 RIVALS · DAY</div>
-                <button id="startButton" class="start-btn">▶ START RACE</button>
-                <div class="start-hint">PRESS ENTER OR TAP TO LAUNCH</div>
+                <div class="start-dock-row">
+                    <button id="startButton" class="start-btn">▶ START RACE</button>
+                    <button id="fullscreenToggle" class="fullscreen-btn" type="button"
+                            aria-pressed="false" aria-label="Enter fullscreen"
+                            title="Enter fullscreen (F)">
+                        <svg class="fs-icon fs-icon-expand" viewBox="0 0 24 24" aria-hidden="true"
+                             fill="none" stroke="currentColor" stroke-width="2.2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6"/>
+                        </svg>
+                        <svg class="fs-icon fs-icon-collapse" viewBox="0 0 24 24" aria-hidden="true"
+                             fill="none" stroke="currentColor" stroke-width="2.2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 3v6H3M21 9h-6V3M15 21v-6h6M3 15h6v6"/>
+                        </svg>
+                        <span class="fs-label">FULLSCREEN</span>
+                    </button>
+                </div>
+                <div class="start-hint">PRESS ENTER OR TAP TO LAUNCH · F FOR FULLSCREEN</div>
+                <div id="fullscreenHint" class="fullscreen-hint" role="status" aria-live="polite"></div>
             </div>
             <p class="menu-foot" id="menuFoot"></p>
         </div>
@@ -224,6 +242,16 @@
             <p class="finish-hint">SCROLL FOR FULL RESULTS · ESC TO EXIT</p>
         </div>
     </div>
+
+    <!-- ══ Fullscreen exit (mobile / touch, while racing or on results) ══ -->
+    <button id="exitFullscreenButton" class="hidden" type="button" aria-label="Exit fullscreen">
+        <svg class="fs-icon" viewBox="0 0 24 24" aria-hidden="true"
+             fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 3v6H3M21 9h-6V3M15 21v-6h6M3 15h6v6"/>
+        </svg>
+        <span class="fs-label">EXIT FULLSCREEN</span>
+    </button>
 
     <!-- ══ On-screen error reporter ══ -->
     <script>
